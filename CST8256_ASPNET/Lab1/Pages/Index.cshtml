@@ -1,0 +1,78 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container">
+    <h1 class="mt-4 mb-4 text-center">Statics</h1>
+    <p class="mt-4 mb-4">Enter one, two or three numerics and click Calculate button to get their statistics.</p>
+    
+    <!-- start of form -->
+    <form method="post" class="form-horizontal mb-4">
+        <div class="form-group row mb-3">
+            <label for="fNumber"class="control-label col-sm-3">First Number</label>
+            <div class="col-sm-6">
+                <input type="text" value="" name="fNumber" id="fNumber" class="form-control" autocomplete="off" placeholder="Enter First Number"/>
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <label for="sNumber" class="control-label col-sm-3">Second Number</label>
+            <div class="col-sm-6">
+                <input type="text" value="" name="sNumber" id="sNumber" class="form-control" autocomplete="off" placeholder="Enter First Number" />
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <label for="tNumber" class="control-label col-sm-3">Third Number</label>
+            <div class="col-sm-6">
+                <input type="text" value="" name="tNumber" id="tNumber" class="form-control" autocomplete="off" placeholder="Enter First Number" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2 m-2">
+                <button class="btn btn-primary" type="submit">Calculate</button>
+            </div>
+            <div class="col-sm-2 m-2">
+                <button class="btn btn-secondary" type="reset">Clear</button>
+            </div>
+        </div>
+    </form>
+    <!-- end of form -->
+
+    <!-- start of the result -->
+    @if (Model.postFlag && Model.dNumbers.Count() == 0)
+    {
+        <div class="text-left">
+            <p class="text-danger font-weight-bold">You did not enter any number, no statics were calculated!</p>
+        </div>
+    }
+    else if (Model.postFlag && Model.dNumbers.Count() > 0)
+    {
+        <div class="text-left">
+            <p class="font-weight-bold">You enterd @Model.dNumbers.Count() numbers. The following are their statistics.</p>
+        </div>
+        <div class="row mb-3">
+            <label for="Maximum" class="control-label col-sm-3">Maximum</label>
+            <label class="control-label col-sm-6">@($"{Model.Max:F1}")</label>
+        </div>
+        <div class="row mb-3">
+            <label for="Minimum" class="control-label col-sm-3">Minimum</label>
+            <label class="control-label col-sm-6">@($"{Model.Min:F1}")</label>
+        </div>
+        <div class="row mb-3">
+            <label for="Total" class="control-label col-sm-3">Total</label>
+            <label class="control-label col-sm-6">@($"{Model.Total:F2}")</label>
+        </div>
+        <div class="row mb-3">
+            <label for="Average" class="control-label col-sm-3">Average</label>
+            <label class="control-label col-sm-6">@($"{Model.Avg:F2}")</label>
+        </div>
+
+    }
+    
+    <!-- end of the result -->
+
+
+
+</div>

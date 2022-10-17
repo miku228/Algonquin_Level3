@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\Registration.cshtml.cs~RF15b678.TMP" />
+    <None Remove="Pages\Shared\_Layout.cshtml~RF14732b.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AcademicManagement" Version="2.0.0" />
+  </ItemGroup>
+
+</Project>

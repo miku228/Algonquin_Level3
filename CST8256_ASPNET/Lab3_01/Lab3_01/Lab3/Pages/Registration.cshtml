@@ -1,0 +1,248 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Lab3.Pages.RegistrationModel
+@{
+    ViewData["Title"] = "Course Registration";
+
+    Model.CourseSelections = new List<SelectListItem>();
+    foreach (Course cs in DataAccess.GetAllCourses())
+    {
+        Model.CourseSelections.Add(new SelectListItem(cs.CourseTitle, cs.CourseCode, false));
+    }
+}
+@using AcademicManagement;
+
+
+<div class="container">
+    <h1 class="display-4">Ragistration</h1>
+    <!-- divider -->
+    <hr class="solid" />
+    <!-- start of form -->
+    <!-- ***************** -->
+    <!-- Student Selection -->
+    <!-- ***************** -->
+    <form method="post" class="form-horizontal mb-4">
+        <div class="form-group row mb-3">
+            <div class="m-4 col-sm-3 dropdown">
+                <select id="selectStudent" name="selectedStudentId" class="form-select">
+                    <option value="-1" class="">Choose a student ...</option>
+                    @foreach (Student student in DataAccess.GetAllStudents())
+                    {
+                        if (student.StudentId == Model.selectedStudentId)
+                        {
+                            <option value="@student.StudentId" selected="selected" class="">@student.StudentName</option>
+
+                        }
+                        else
+                        {
+                            <option value="@student.StudentId" class="">@student.StudentName</option>
+                        }
+
+                    }
+                </select>
+            </div>
+            <div class="m-4 col-sm-4" hidden>
+                <button class="btn btn-primary" type="submit" id="getRegistration" value="StudentSelected" asp-page-handler="StudentSelected">Get Registrations</button>
+            </div>
+
+        </div>
+
+        <!-- ******** -->
+        <!-- Messages -->
+        <!-- ******** -->
+        @if (!Model.sSlectedFlag && Model.firstLoad != 0)
+        {
+            <div class="text-left">
+                <p class="bg-info text-muted ">You must select a student</p>
+            </div>
+        }
+        else if (Model.sSlectedFlag && !Model.cSlectedFlag)
+        {
+            <div class="text-left">
+                <p class="bg-info text-muted ">You must select at least one course!</p>
+            </div>
+        }
+        else if (Model.sSlectedFlag && Model.cSlectedFlag)
+        {
+            <div class="text-left">
+                <p class="bg-info text-muted ">The student has registered for the following courses.</p>
+            </div>
+        }
+        else if (Model.sSlectedFlag)
+        {
+            <div class="text-left">
+                <p class="bg-info text-muted y">The student has not registered any courses. Select course(s) to register.</p>
+            </div>
+        }
+
+
+        <!-- *********************** -->
+        <!-- Courses Selection Table -->
+        <!-- *********************** -->
+        @if (Model.selectedStudentId != null && Model.academicRecords.Count() == 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <!-- <th scope="col">Course Code</th>
+                        <th scope="col">Course Title</th>
+                        -->
+                        <th scope="col">
+                            <a asp-page="Registration" asp-route-orderby="code">Course Code</a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="Registration" asp-route-orderby="title">Course Title</a>
+                        </th>
+                        <th scope="col">Check to Register</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+
+                        if (Model.OrderBy == "code")
+                        {
+                            Model.CourseSelections.Sort((s1, s2) => s1.Value.CompareTo(s2.Value));
+                        }
+                        else if (Model.OrderBy == "title")
+                        {
+                            Model.CourseSelections.Sort((s1, s2) => s1.Text.CompareTo(s2.Text));
+                        }
+                        
+                    }
+
+                    @for (int i = 0; i < Model.CourseSelections.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                <input asp-for="@Model.CourseSelections[i].Value" hidden />
+                                @Model.CourseSelections[i].Value
+                            </td>
+                            <td>
+                                <input asp-for="@Model.CourseSelections[i].Text" hidden />
+                                @Model.CourseSelections[i].Text
+                            </td>
+                            <td>
+                                <input type="checkbox" asp-for="@Model.CourseSelections[i].Selected">
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="col-sm-4 m-2">
+                <button class="btn btn-primary" type="submit" value="Register" asp-page-handler="Register">Register</button>
+            </div>
+        }
+
+        <!-- ************************ -->
+        <!-- Registerd Courses Result -->
+        <!-- ************************ -->
+        @if (Model.selectedStudentId != null && Model.academicRecords.Count() > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <a asp-page="Registration" asp-route-orderby="code">Course Code</a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="Registration" asp-route-orderby="title">Course Title</a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="Registration" asp-route-orderby="grade" id="grade">Grade</a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+
+                        if (Model.OrderBy == "code")
+                        {
+                            Model.SelectedCourses.Sort((s1, s2) => s1.CourseCode.CompareTo(s2.CourseCode));
+                        }
+                        else if (Model.OrderBy == "title")
+                        {
+                            Model.SelectedCourses.Sort((s1, s2) => s1.CourseTitle.CompareTo(s2.CourseTitle));
+                        }
+                        if (Model.OrderBy == "grade")
+                        {
+                            Model.academicRecords.Sort((s1, s2) => s1.Grade.CompareTo(s2.Grade));
+                        }
+
+
+                        if (Model.OrderBy == "code" || Model.OrderBy == "title" || Model.OrderBy == null)
+                        {
+                            @foreach (Course course in Model.SelectedCourses)
+                            {
+                                <tr>
+                                    <td>
+                                        <input asp-for="@course.CourseCode" name="courseCode" hidden />
+                                        @course.CourseCode
+                                    </td>
+                                    <td>@course.CourseTitle</td>
+                                    @{
+                                        AcademicRecord sAcadmicRecord = Model.academicRecords.First(c => c.CourseCode == course.CourseCode);
+                                    }
+
+                                    <td>
+                                        @{
+                                            string val = "";
+                                            if (Convert.ToString(sAcadmicRecord.Grade) != "-100")
+                                            {
+                                                val = Convert.ToString(sAcadmicRecord.Grade);
+                                            }
+
+                                        }
+                                        <input name="grade" value=@val>
+
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+                        else if (Model.OrderBy == "grade")
+                        {
+                            @foreach (AcademicRecord course in Model.academicRecords)
+                            {
+                                <tr>
+                                    <td>
+                                        <input asp-for="@course.CourseCode" name="courseCode" hidden />
+                                        @course.CourseCode
+                                    </td>
+                                    @{
+                                        SelectListItem scourse = Model.CourseSelections.First(c => c.Value == course.CourseCode);
+
+                                    }
+                                    <td>@scourse.Text</td>
+                                    <td>
+                                        @{
+                                            string val = "";
+                                            if (Convert.ToString(course.Grade) != "-100")
+                                            {
+                                                val = Convert.ToString(course.Grade);
+                                            }
+
+                                        }
+                                        <input name="grade" value=@val>
+
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+
+
+                    }
+
+
+                </tbody>
+            </table>
+            <button class="btn btn-primary" type="submit" id="RegisterGrade" value="RegisterGrade" asp-page-handler="RegisterGrade">Submit Grades</button>
+
+        }
+        <!-- end of selected courses results -->
+
+        <p>@Model.Message</p>
+    </form>
+    <!-- end of form -->
+
+</div>

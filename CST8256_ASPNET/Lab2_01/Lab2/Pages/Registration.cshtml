@@ -1,0 +1,146 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Lab2.Pages.RegistrationModel
+@{
+    ViewData["Title"] = "Course Registration";
+
+    Model.CourseSelections = new List<SelectListItem>();
+    foreach (Course cs in DataAccess.GetAllCourses())
+    {
+        Model.CourseSelections.Add(new SelectListItem(cs.CourseTitle, cs.CourseCode, false));
+    }
+}
+@using AcademicManagement;
+
+
+<div class="container">
+    <h1 class="display-4">Ragistration</h1>
+    <!-- divider -->
+    <hr class="solid" />
+    <!-- start of form -->
+
+    <!-- ***************** -->
+    <!-- Student Selection -->
+    <!-- ***************** -->
+    <form method="post" class="form-horizontal mb-4">
+        <div class="form-group row mb-3">
+            <div class="m-4 col-sm-3 dropdown">
+                <select name="selectedStudentId" class="form-select">
+                    <option value="-1" class="">Choose a student ...</option>
+                    @foreach (Student student in DataAccess.GetAllStudents())
+                    {
+                        if (student.StudentId == Model.selectedStudentId)
+                        {
+                                    <option value="@student.StudentId" selected="selected" class="">@student.StudentName</option>
+
+                        }
+                        else
+                        {
+                                    <option value="@student.StudentId" class="">@student.StudentName</option>
+                        }
+
+                    }
+                </select>
+            </div>
+            <div class="m-4 col-sm-4">
+                <button class="btn btn-primary" type="submit" value="StudentSelected" asp-page-handler="StudentSelected">Get Registrations</button>
+            </div>
+
+        </div>
+
+        <!-- ******** -->
+        <!-- Messages -->
+        <!-- ******** -->
+        @if (!Model.sSlectedFlag && Model.firstLoad != 0)
+        {
+                <div class="text-left">
+                    <p class="bg-info text-muted ">You must select a student</p>
+                </div>
+        }
+        else if (Model.sSlectedFlag && !Model.cSlectedFlag)
+        {
+                <div class="text-left">
+                    <p class="bg-info text-muted ">You must select at least one course!</p>
+                </div>
+        }
+        else if (Model.sSlectedFlag && Model.cSlectedFlag)
+        {
+                <div class="text-left">
+                    <p class="bg-info text-muted ">The student has registered for the following courses.</p>
+                </div>
+        }
+        else if (Model.sSlectedFlag)
+        {
+                <div class="text-left">
+                    <p class="bg-info text-muted y">The student has not registered any courses. Select course(s) to register.</p>
+                </div>
+        }
+
+
+        <!-- ***************** -->
+        <!-- Courses Selection -->
+        <!-- ***************** -->
+        @if (Model.sSlectedFlag && !Model.cSlectedFlag)
+        {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Course Code</th>
+                            <th scope="col">Course Title</th>
+                            <th scope="col">Check to Register</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for (int i = 0; i < Model.CourseSelections.Count(); i++)
+                    {
+                                <tr>
+                                    <td>
+                                        <input asp-for="@Model.CourseSelections[i].Value" hidden/>
+                                @Model.CourseSelections[i].Value
+                                    </td>
+                                    <td>
+                                        <input asp-for="@Model.CourseSelections[i].Text" hidden />
+                                @Model.CourseSelections[i].Text
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" asp-for="@Model.CourseSelections[i].Selected">
+                                    </td>
+                                </tr>
+                    }
+                    </tbody>
+                </table>
+                <div class="col-sm-4 m-2">
+                    <button class="btn btn-primary" type="submit" value="Register" asp-page-handler="Register">Register</button>
+                </div>
+        } 
+    </form>
+    <!-- end of form -->
+
+    <!-- ************************ -->
+    <!-- Registerd Courses Result -->
+    <!-- ************************ -->
+    @if (Model.cSlectedFlag && Model.sSlectedFlag)
+    {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Course Code</th>
+                        <th scope="col">Course Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (Course course in Model.SelectedCourses)
+                {
+                            <tr>
+                                <td>@course.CourseCode</td>
+                                <td>@course.CourseTitle</td>
+                            </tr>
+                }
+                </tbody>
+            </table>
+    }
+    <!-- end of selected courses results -->
+
+
+
+</div>

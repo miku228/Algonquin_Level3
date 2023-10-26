@@ -1,0 +1,58 @@
+﻿@page
+@model Lab5.Pages.AcademicRecordManagement.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>AcademicRecord</h4>
+<hr />
+<div class="row">
+    <div class="col-md-10">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AcademicRecord.CourseCode" />
+            <input type="hidden" asp-for="AcademicRecord.StudentId" />
+            <input type="hidden" asp-for="AcademicRecord.Student" />
+            <input type="hidden" asp-for="AcademicRecord.CourseCodeNavigation" />
+            <div class="form-group row mb-3">
+                <label asp-for="AcademicRecord.Student" class="control-label col-sm-2"></label>
+                <div class="col-sm-10">
+                    <strong>
+                        <input type="text" hidden class="form-control " value="@Model.AcademicRecord.Student.DisplayText" />
+                        <label>@Model.AcademicRecord.Student.DisplayText</label>
+                    </strong>
+                </div>
+            </div>
+            <div class="form-group row mb-3">
+                <label class="control-label col-sm-2">Course</label>
+                <div class="col-sm-10">
+                    <strong>
+                        <input type="text" hidden class="form-control" value="@Model.AcademicRecord.CourseCodeNavigation.DisplayText" />
+                        <label>@Model.AcademicRecord.CourseCodeNavigation.DisplayText</label>
+                    </strong>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="AcademicRecord.Grade" class="control-label col-sm-2"></label>
+                <div class="col-sm-7">
+                    <input asp-for="AcademicRecord.Grade" class="form-control" />
+                </div>
+                <span asp-validation-for="AcademicRecord.Grade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,60 @@
+﻿@page
+@model Lab5.Pages.StudentManagement.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="" asp-route-orderby="Name"><label>@Html.DisplayNameFor(model => model.Student[0].Name)</label></a>
+            </th>
+            <th>
+                <a asp-page="" asp-route-orderby="NumberofCourses"><label>Number of Courses</label></a>
+            </th>
+            <th>
+                <a asp-page="" asp-route-orderby="AvgGrade"><label>Avg.Grade</label></a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Student) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @item.NumberOfCourses
+            </td>
+            <td>
+                    @{
+                        string avg = item.AvgGrade.HasValue ? item.AvgGrade.Value.ToString() : "N/A";
+                    }
+                    @avg
+            </td>
+            
+            <td>
+                <!-- <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |-->
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Index" asp-route-delete="@item.Id" onclick=" return deleteClicked('@item.Name.Trim()');">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+        function deleteClicked(name) {
+            return confirm('Please confirm to delete customer:\n\n ' + name);
+        }
+    </script>
+}

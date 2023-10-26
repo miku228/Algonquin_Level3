@@ -1,0 +1,58 @@
+﻿@page
+@model Lab5.Pages.AcademicRecordManagement.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="" asp-route-orderby="Course"><label>Course</label></a>
+            </th>
+            <th>
+                <a asp-page="" asp-route-orderby="Student"><label>@Html.DisplayNameFor(model => model.AcademicRecord[0].Student)</label></a>
+            </th>
+            <th>
+                <a asp-page="" asp-route-orderby="Grade"><label>@Html.DisplayNameFor(model => model.AcademicRecord[0].Grade)</label></a>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.AcademicRecord) {
+        <tr>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.CourseCodeNavigation.DisplayText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Student.DisplayText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-studentId="@item.StudentId" asp-route-courseId="@item.CourseCode">Edit</a> |
+                <!-- @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) -->
+                @Html.ActionLink("Delete", "Delete", new { delete=@item.StudentId, courseId=item.CourseCode /* id=item.PrimaryKey */ }, new {onclick = "return confirm('Please confirm to delete the following academic record                Student : "+ @item.Student.Name +"                                                              Course : "+@item.CourseCodeNavigation.Title+"');"})
+                   
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        function deleteClicked(name) {
+            return confirm('Please confirm to delete customer:\n\n ' + name);
+        }
+    </script>
+}
